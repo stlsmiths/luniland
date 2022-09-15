@@ -13,6 +13,7 @@ class Ship extends DynamicObject {
 
     this.engineLevel = 0;
     this.fuelLevel = 1000
+    this._monitorFuel = true
 
     this.v = new Two.Vector(0, 0);
     this.rotation = 0;
@@ -38,21 +39,30 @@ class Ship extends DynamicObject {
     this.flame.fill = `rgb(255, ${Math.round(255 - (255 - 50) * normalizedEngine)}, 50)`;
   }
 
+  // getter / setter for _monitorFuel state
+  set monitorFuel( val ) {
+    this._monitorFuel = val
+  }
+  get monitorFuel() {
+    return this._monitorFuel
+  }
+
   get acceleration() {
     const r = this.group.rotation - Math.PI / 2.0
     const sinR = Math.sin(r);
     const cosR = Math.cos(r);
 
-    this.fuelLevel -= this.engineLevel / 20
-    if ( this.fuelLevel < 0 ) {
-      this.fuelLevel = 0
-      this.engineLevel = 0
+    if ( this.monitorFuel ) {
+      this.fuelLevel -= this.engineLevel / 20
+      if (this.fuelLevel < 0) {
+        this.fuelLevel = 0
+        this.engineLevel = 0
+      }
     }
 
     const engineAcc = this.engineLevel / -8 * -DynamicObject.gravity;
     const ax = cosR * engineAcc;
     const ay = (sinR * engineAcc) + DynamicObject.gravity;
-
 
     return new Two.Vector(ax, ay);
   }

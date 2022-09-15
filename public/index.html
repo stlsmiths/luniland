@@ -22,6 +22,8 @@
         .bottom-right { position: absolute; bottom:0.5em; right: 1em; }
         .label-group { margin-right: 1em; }
         .lg-label, .lg-value, .lg-sign { font-size: 24px; margin-right: 0.2em; }
+        .lg-label-small { font-size: 20px; margin-right: 0.2em; }
+        .init-check { outline: none; }
     </style>
   </head>
 
@@ -41,6 +43,10 @@
         </span>
         <span id="fuel" class="label-group">
           <span class="lg-label">Fuel</span><span class="lg-value">0</span>
+        </span>
+        <span id="fuelOption" class="label-group">
+          <input type="checkbox" id="fuelCheck" checked="true" class="init-check" onchange="luniTwo.fuelCheckChange(this)"/>
+          <span id="fuelMonitorLabel" class="lg-label-small"></span>
         </span>
       </div>
       <span class="bottom-right"><a href="https://github.com/halaprop/luniland">https://github.com/halaprop/luniland</a></span>

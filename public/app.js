@@ -37,6 +37,7 @@ class LuniTwo {
     this.vyLabel = new Label('vy', { label: 'v<sub>y</sub>', plusSign: '↓', minusSign: '↑'  });
     this.rtLabel = new Label('rotation', { label: 'r:', plusSign: '↻', minusSign: '↺'  });
     this.fuelLabel = new Label('fuel', { label: 'fuel:', plusSign: '', minusSign: '-'  });
+    this.fuelMonitorLabel = new Label('fuelMonitorLabel', { label: 'Monitor fuel ?', plusSign: '', minusSign: ''});
 
     this.state = this.startingState;
   }
@@ -111,6 +112,18 @@ class LuniTwo {
     this.statusLabel.showHTML(kLandMsg, 10000);
 
     return this.ship.stopped ? this.idleState : this.landingState;
+  }
+
+  // This method toggles fuel burn on / off AND changed visibility of the fuel states label group
+  fuelCheckChange( chkbox ) {
+    const fuelSpan = document.getElementById('fuel')
+    if ( chkbox.checked ) {
+      this.ship.monitorFuel = true
+      fuelSpan.style.visibility = 'visible'
+    } else {
+      this.ship.monitorFuel = false
+      fuelSpan.style.visibility = 'hidden'
+    }
   }
 
   idleState() {
