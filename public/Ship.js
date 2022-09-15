@@ -13,7 +13,7 @@ class Ship extends DynamicObject {
 
     this.engineLevel = 0;
     this.fuelLevel = 1000
-    this._monitorFuel = true
+    this._monitorFuel = false
 
     this.v = new Two.Vector(0, 0);
     this.rotation = 0;
@@ -48,7 +48,7 @@ class Ship extends DynamicObject {
   }
 
   get acceleration() {
-    const r = this.group.rotation - Math.PI / 2.0
+    let r = this.group.rotation - Math.PI / 2.0
     const sinR = Math.sin(r);
     const cosR = Math.cos(r);
 

@@ -17,15 +17,15 @@ class LuniTwo {
     window.onresize = debounce(() => this.resize(), 200);
 
     this.keyboard = new KeyboardController({
-      ArrowLeft:  () => this.ship.av -= 0.0005,
-      ArrowRight: () => this.ship.av += 0.0005,
+      ArrowLeft:  () => this.ship.av -= this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
+      ArrowRight: () => this.ship.av += this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
       ArrowUp:    () => this.ship.engineLevel += 1,
       ArrowDown: () => this.ship.engineLevel -= 1
     }, 60);
 
     this.touch = new TouchController({
-      left:  () => this.ship.av -= 0.0005,
-      right: () => this.ship.av += 0.0005,
+      left:  () => this.ship.av -= this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
+      right: () => this.ship.av += this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
       up:    () => this.ship.engineLevel += 1,
       down: () => this.ship.engineLevel -= 1
     });
@@ -54,6 +54,10 @@ class LuniTwo {
     this.ship = new Ship(this.two, 0, -1200);
     this.ship.rotation = Math.PI/2;
     this.ship.v = new Two.Vector(0.1, 0.0);
+
+    this.ship.monitorFuel = false
+    this.fuelCheckChange( false )
+
     this.camera = new Camera(this.two, this.cameraTransform());
     return this.flyingState;
   }
