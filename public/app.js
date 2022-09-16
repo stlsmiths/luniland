@@ -3,7 +3,11 @@
 
 const kStartMsg = 'Land the ship on the flat pads. Use left/right arrows to rotate and up/down arrows to control thrust.';
 const kLandMsg = 'The Eagle has landed! Increase thrust to take off again.';
+const kLandRecordMsg = 'The Eagle has landed! You have also set a new fuel savings RECORD !! <br>Increase thrust to take off again.';
 const kCrashMsg = 'You just blew a billion dollar hole in NASA\'s budget. Sad!<br\>(reload to try again)';
+
+const kFuelMonitorInit = true
+const kThemeDark = true
 
 class LuniTwo {
   constructor() {
@@ -15,6 +19,8 @@ class LuniTwo {
     }).appendTo(document.getElementById('app'));
 
     window.onresize = debounce(() => this.resize(), 200);
+
+    this.dark = kThemeDark
 
     this.keyboard = new KeyboardController({
       ArrowLeft:  () => this.ship.av -= 0.0005,
@@ -38,6 +44,18 @@ class LuniTwo {
     this.rtLabel = new Label('rotation', { label: 'r:', plusSign: '↻', minusSign: '↺'  });
     this.fuelLabel = new Label('fuel', { label: 'fuel:', plusSign: '', minusSign: '-', roundTo: 0 });
 
+    const dark = this.dark
+    this.statusLabel = new Label('status', {dark});
+    this.statusLabel.showHTML(kStartMsg, 7000);
+
+    this.vxLabel = new Label('vx', { label: 'v<sub>x</sub>', plusSign: '→', minusSign: '←', dark });
+    this.vyLabel = new Label('vy', { label: 'v<sub>y</sub>', plusSign: '↓', minusSign: '↑', dark });
+    this.rtLabel = new Label('rotation', { label: 'r:', plusSign: '↻', minusSign: '↺', dark });
+
+    this.fuelLabel = new Label('fuel', { label: 'fuel:', plusSign: '', minusSign: '-', dark });
+    this.fuelMonitorLabel = new Label('fuelMonitorLabel', { label: 'Monitor fuel ?', plusSign: '', minusSign: '', dark});
+    this.lightDark = new Label('lightDark', { label: dark ? 'Light' : 'Dark', plusSign: '', minusSign: '', dark});
+
     this.state = this.startingState;
   }
 
@@ -49,10 +67,17 @@ class LuniTwo {
 
   // each game state method performs an action for that state and returns a next state
   startingState() {
-    this.terrain = new Terrain(this.two, -8192, 16384, this.two.height, 16);
+    this.terrain = new Terrain(this.two, -8192, 16384, this.two.height, 16, this.dark);
     this.ship = new Ship(this.two, 0, -1200);
     this.ship.rotation = Math.PI/2;
     this.ship.v = new Two.Vector(0.1, 0.0);
+
+    // this.ship.monitorFuel = kFuelMonitorInit
+    this.fuelCheckChange({checked: kFuelMonitorInit })
+    if ( kFuelMonitorInit ) {
+      document.getElementById('fuelCheck').setAttribute('checked','true')
+    }
+
     this.camera = new Camera(this.two, this.cameraTransform());
     return this.flyingState;
   }
@@ -108,10 +133,45 @@ class LuniTwo {
   landingState() {
     const y = this.terrain.horizonAtX(this.ship.translation.x).y;
     this.ship.land(y);
+
     this.statusLabel.showHTML(kLandMsg, 10000);
     this.fuelLabel.setNumber(this.ship.fuelLevel, 'black');
+    this.statusLabel.showHTML( this.ship.newRecord ? kLandRecordMsg : kLandMsg, 10000);
 
     return this.ship.stopped ? this.idleState : this.landingState;
+  }
+
+  // This method toggles fuel burn on / off AND changed visibility of the fuel states label group
+  fuelCheckChange( chkbox ) {
+    const fuelSpan = document.getElementById('fuel')
+    if ( chkbox.checked ) {
+      this.ship.monitorFuel = true
+      fuelSpan.style.visibility = 'visible'
+    } else {
+      this.ship.monitorFuel = false
+      fuelSpan.style.visibility = 'hidden'
+    }
+  }
+
+  toggleLightDark() {
+    this.dark = !this.dark
+
+    const cont = document.getElementById('container')
+    cont.style.backgroundColor = this.dark ? 'black' : 'white'
+
+    this.fuelMonitorLabel = new Label('fuelMonitorLabel', {
+      label: 'Monitor fuel ?',
+      plusSign: '', minusSign: '',
+      dark: this.dark
+    });
+    this.lightDark = new Label('lightDark', {
+      label: this.dark ? 'Light' : 'Dark',
+      plusSign: '', minusSign: '',
+      dark: this.dark
+    });
+
+    // tryna change terrain color ... this fails spectacularly and very confusingly !!
+    // this.terrain = new Terrain(this.two, -8192, 16384, this.two.height, 16, this.dark);
   }
 
   idleState() {

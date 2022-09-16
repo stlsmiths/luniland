@@ -1,5 +1,10 @@
 'use strict';
 
+const kFuelFull = 1000
+const kFuelMassFraction = 0.6
+const kFuelFudge = 0 // 0.4
+const kFuelCookie = 'luniMaxFuelRecord'
+
 class Ship extends DynamicObject {
   constructor(two, x = 0, y = 0) {
     super();
@@ -12,7 +17,9 @@ class Ship extends DynamicObject {
     // actual LEM radius is about 2 meters, so app units is 10px per meter, or 0.1 meters per px
 
     this.engineLevel = 0;
-    this.fuelLevel = 1000
+    this.fuelLevel = kFuelFull
+    this._monitorFuel = true
+    this.newRecord = false
 
     this.v = new Two.Vector(0, 0);
     this.rotation = 0;
@@ -43,13 +50,18 @@ class Ship extends DynamicObject {
     const sinR = Math.sin(r);
     const cosR = Math.cos(r);
 
-    this.fuelLevel -= this.engineLevel / 20
-    if (this.fuelLevel < 0) {
-      this.fuelLevel = 0
-      this.engineLevel = 0
+    let fuelMassEffect = 0
+
+    if ( this.monitorFuel ) {
+      this.fuelLevel -= this.engineLevel / 20
+      if (this.fuelLevel < 0) {
+        this.fuelLevel = 0
+        this.engineLevel = 0
+      }
+      fuelMassEffect = kFuelFudge * kFuelMassFraction * (1 - this.fuelLevel / kFuelFull)
     }
 
-    const engineAcc = this.engineLevel / -8 * -DynamicObject.gravity;
+    const engineAcc = ( -this.engineLevel / 8 - fuelMassEffect) * -DynamicObject.gravity;
     const ax = cosR * engineAcc;
     const ay = (sinR * engineAcc) + DynamicObject.gravity;
 
@@ -134,14 +146,22 @@ class Ship extends DynamicObject {
       } else {
         this.translation = this.translation.addSelf(0, 0.5);
       }
+
+      if ( this.monitorFuel ) {
+        if ( !localStorage.getItem(kFuelCookie) || localStorage.getItem(kFuelCookie) < this.fuelLevel  ) {
+          localStorage.setItem(kFuelCookie, this.fuelLevel )
+          this.newRecord = true
+        }
+      }
     }
   }
 
   launch() {
     this.stopped = false;
     this.translation.addSelf({x:0,y:-2})
-    this.fuelLevel = 1000;
     this.v.y = -0.1;
+    this.fuelLevel = kFuelFull
+    this.newRecord = false
   }
 
   crash () {
