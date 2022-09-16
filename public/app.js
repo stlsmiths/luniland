@@ -93,7 +93,7 @@ class LuniTwo {
     const landable = this.ship.landable();
     this.vxLabel.setNumber(landable.vx * 100, landable.vxOkay ? 'black' : 'red');
     this.vyLabel.setNumber(landable.vy * 100, landable.vyOkay ? 'black' : 'red');
-    this.rtLabel.setNumber(landable.rotation, landable.rotationOkay ? 'black' : 'red');
+    this.rtLabel.setNumber(landable.rotation * 180 / Math.PI, landable.rotationOkay ? 'black' : 'red', '°');
     this.fuelLabel.setNumber( this.ship.fuelLevel, this.ship.fuelLevel > 250 ? 'black' : 'red');
 
     const nextState = { flying: this.flyingState, landing: this.landingState, crashing: this.crashingState };

@@ -102,17 +102,18 @@ class Label {
     this.plusSign = options.plusSign || '+';
     this.minusSign = options.minusSign || '-';
     this.roundTo = options.roundTo || 2;
-    
+
     if (options.label) this.labelDiv.innerHTML = options.label;
   }
 
-  setNumber(number, color='black') {
+  setNumber(number, color='black', suffix = '') {
     if (this.signDiv) {
-      this.valueDiv.innerText = Math.abs(number).toFixed(this.roundTo);
+      this.valueDiv.innerText = Math.abs(number).toFixed(this.roundTo) + suffix;
       this.signDiv.innerText = number > 0 ? this.plusSign : this.minusSign;
     } else {
-      this.valueDiv.innerText = number.toFixed(this.roundTo);
+      this.valueDiv.innerText = number.toFixed(this.roundTo) + suffix;
     }
+
     this.div.style.color = color;
   }
 
