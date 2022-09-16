@@ -98,6 +98,9 @@ class Label {
     this.labelDiv = this.div.getElementsByClassName('lg-label')[0] || this.div;
     this.valueDiv = this.div.getElementsByClassName('lg-value')[0];
     this.signDiv = this.div.getElementsByClassName('lg-sign')[0];
+    if ( options.dark ) {
+      this.div.style.color = 'white'
+    }
 
     this.plusSign = options.plusSign || '+';
     this.minusSign = options.minusSign || '-';
@@ -113,7 +116,6 @@ class Label {
     } else {
       this.valueDiv.innerText = number.toFixed(this.roundTo) + suffix;
     }
-
     this.div.style.color = color;
   }
 

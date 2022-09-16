@@ -16,6 +16,8 @@ class LuniTwo {
 
     window.onresize = debounce(() => this.resize(), 200);
 
+    this.dark = true
+
     this.keyboard = new KeyboardController({
       ArrowLeft:  () => this.ship.av -= this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
       ArrowRight: () => this.ship.av += this.ship.rotation <= Math.PI/2 && this.ship.rotation >= -Math.PI/2 ? 0.0005 : 0.0002,
@@ -30,14 +32,14 @@ class LuniTwo {
       down: () => this.ship.engineLevel -= 1
     });
 
-    this.statusLabel = new Label('status');
+    this.statusLabel = new Label('status', {dark: this.dark });
     this.statusLabel.showHTML(kStartMsg, 7000);
 
-    this.vxLabel = new Label('vx', { label: 'v<sub>x</sub>', plusSign: '→', minusSign: '←'  });
-    this.vyLabel = new Label('vy', { label: 'v<sub>y</sub>', plusSign: '↓', minusSign: '↑'  });
-    this.rtLabel = new Label('rotation', { label: 'r:', plusSign: '↻', minusSign: '↺'  });
-    this.fuelLabel = new Label('fuel', { label: 'fuel:', plusSign: '', minusSign: '-'  });
-    this.fuelMonitorLabel = new Label('fuelMonitorLabel', { label: 'Monitor fuel ?', plusSign: '', minusSign: ''});
+    this.vxLabel = new Label('vx', { label: 'v<sub>x</sub>', plusSign: '→', minusSign: '←', dark: this.dark });
+    this.vyLabel = new Label('vy', { label: 'v<sub>y</sub>', plusSign: '↓', minusSign: '↑', dark: this.dark });
+    this.rtLabel = new Label('rotation', { label: 'r:', plusSign: '↻', minusSign: '↺', dark: this.dark });
+    this.fuelLabel = new Label('fuel', { label: 'fuel:', plusSign: '', minusSign: '-', dark: this.dark });
+    this.fuelMonitorLabel = new Label('fuelMonitorLabel', { label: 'Monitor fuel ?', plusSign: '', minusSign: '', dark: this.dark});
 
     this.state = this.startingState;
   }
@@ -50,13 +52,14 @@ class LuniTwo {
 
   // each game state method performs an action for that state and returns a next state
   startingState() {
-    this.terrain = new Terrain(this.two, -8192, 16384, this.two.height, 16);
+    this.terrain = new Terrain(this.two, -8192, 16384, this.two.height, 16, this.dark);
     this.ship = new Ship(this.two, 0, -1200);
     this.ship.rotation = Math.PI/2;
     this.ship.v = new Two.Vector(0.1, 0.0);
 
     this.ship.monitorFuel = false
     this.fuelCheckChange( false )
+
 
     this.camera = new Camera(this.two, this.cameraTransform());
     return this.flyingState;
@@ -91,10 +94,11 @@ class LuniTwo {
 
     // App calculates in px/ms.  px/ms * m/px * s/ms = m/s (???)
     const landable = this.ship.landable();
-    this.vxLabel.setNumber(landable.vx * 100, landable.vxOkay ? 'black' : 'red');
-    this.vyLabel.setNumber(landable.vy * 100, landable.vyOkay ? 'black' : 'red');
-    this.rtLabel.setNumber(landable.rotation * 180 / Math.PI, landable.rotationOkay ? 'black' : 'red', '°');
-    this.fuelLabel.setNumber( this.ship.fuelLevel, this.ship.fuelLevel > 250 ? 'black' : 'red');
+    const okTextColor = this.dark ? 'white' : 'black'
+    this.vxLabel.setNumber(landable.vx * 100, landable.vxOkay ? okTextColor : 'red');
+    this.vyLabel.setNumber(landable.vy * 100, landable.vyOkay ? okTextColor : 'red');
+    this.rtLabel.setNumber(landable.rotation * 180 / Math.PI, landable.rotationOkay ? okTextColor : 'red', '°');
+    this.fuelLabel.setNumber( this.ship.fuelLevel, this.ship.fuelLevel > 250 ? okTextColor : 'red');
 
     const nextState = { flying: this.flyingState, landing: this.landingState, crashing: this.crashingState };
     const hitTest = this.ship.hitTest(this.terrain);
@@ -128,6 +132,14 @@ class LuniTwo {
       this.ship.monitorFuel = false
       fuelSpan.style.visibility = 'hidden'
     }
+  }
+
+  lightDark() {
+    this.dark = !this.dark
+    console.log('light dark', this.dark)
+    const cont = document.getElementById('container')
+    cont.style['background-color'] = this.dark ? 'black' : 'white'
+    this.fuelMonitorLabel = new Label('fuelMonitorLabel', { label: 'Monitor fuel ?', plusSign: '', minusSign: '', dark: this.dark});
   }
 
   idleState() {

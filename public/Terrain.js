@@ -3,10 +3,12 @@
 const kPathWidth = 2048;
 const kPadWidth = 80;
 const kPadHeight = 4
+const kFillLight = 'rgb(240,240,240)'
+const kFillDark = 'rgb(63,63,63)'
 
 class Terrain {
 
-  constructor(two, xPos, width, amplitude, padCount) {
+  constructor(two, xPos, width, amplitude, padCount, dark = false) {
     this.xPos = xPos;
     this.width = width;
 
@@ -22,9 +24,9 @@ class Terrain {
     const bl = new Two.Anchor(this.anchors[0].x, amplitude * 2);
     const br = new Two.Anchor(this.anchors[this.anchors.length-1].x, amplitude * 2);
     this.path = new Two.Path([...this.anchors, br, bl], true);
-    this.path.fill = 'rgb(240,240,240)'
+    this.path.fill = dark ? kFillDark : kFillLight
 
-    const group = new Two.Group(this.path);    
+    const group = new Two.Group(this.path);
     this.createPadsAndHorizon(padCount, group);
 
     two.add(group);
@@ -128,7 +130,7 @@ class Terrain {
 
     if (polygon.length) closePolygon(polygon);
     if (padPolygon.length > 3) closePolygon(padPolygon); else padPolygon = [];
-    //debugDraw('ter', polygon, 'blue') 
+    //debugDraw('ter', polygon, 'blue')
 
     return { polygon, distance: Math.sqrt(minDistance), padPolygon }
   }
