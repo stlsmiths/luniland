@@ -1,5 +1,10 @@
 'use strict';
 
+const kFuelFull = 1000
+const kFuelMassFraction = 0.6
+const kFuelFudge = 0 // 0.4
+const kFuelCookie = 'luniMaxFuelRecord'
+
 class Ship extends DynamicObject {
   constructor(two, x = 0, y = 0) {
     super();
@@ -12,8 +17,9 @@ class Ship extends DynamicObject {
     // actual LEM radius is about 2 meters, so app units is 10px per meter, or 0.1 meters per px
 
     this.engineLevel = 0;
-    this.fuelLevel = 1000
-    this._monitorFuel = false
+    this.fuelLevel = kFuelFull
+    this._monitorFuel = true
+    this.newRecord = false
 
     this.v = new Two.Vector(0, 0);
     this.rotation = 0;
@@ -39,18 +45,12 @@ class Ship extends DynamicObject {
     this.flame.fill = `rgb(255, ${Math.round(255 - (255 - 50) * normalizedEngine)}, 50)`;
   }
 
-  // getter / setter for _monitorFuel state
-  set monitorFuel( val ) {
-    this._monitorFuel = val
-  }
-  get monitorFuel() {
-    return this._monitorFuel
-  }
-
   get acceleration() {
-    let r = this.group.rotation - Math.PI / 2.0
+    const r = this.group.rotation - Math.PI / 2.0
     const sinR = Math.sin(r);
     const cosR = Math.cos(r);
+
+    let fuelMassEffect = 0
 
     if ( this.monitorFuel ) {
       this.fuelLevel -= this.engineLevel / 20
@@ -58,9 +58,10 @@ class Ship extends DynamicObject {
         this.fuelLevel = 0
         this.engineLevel = 0
       }
+      fuelMassEffect = kFuelFudge * kFuelMassFraction * (1 - this.fuelLevel / kFuelFull)
     }
 
-    const engineAcc = this.engineLevel / -8 * -DynamicObject.gravity;
+    const engineAcc = ( -this.engineLevel / 8 - fuelMassEffect) * -DynamicObject.gravity;
     const ax = cosR * engineAcc;
     const ay = (sinR * engineAcc) + DynamicObject.gravity;
 
@@ -82,11 +83,15 @@ class Ship extends DynamicObject {
     const vx = this.v.x;
     const vy = this.v.y;
     const rotation = this.rotation;
+    const fuelLevel = this.fuelLevel;
+
     const vxOkay = Math.abs(vx) < 0.007;
     const vyOkay = vy < 0.02;
     const rotationOkay = Math.abs(rotation) < 0.3;
+    const fuelOkay = this.fuelLevel > 250;
     const allOkay = vxOkay && vyOkay && rotationOkay;
-    return { vx, vy, rotation, vxOkay, vyOkay ,rotationOkay, allOkay };
+
+    return { vx, vy, rotation, fuelLevel, vxOkay, vyOkay, rotationOkay, fuelOkay, allOkay };
   }
 
   hitTest(terrain) {
@@ -141,6 +146,13 @@ class Ship extends DynamicObject {
       } else {
         this.translation = this.translation.addSelf(0, 0.5);
       }
+
+      if ( this.monitorFuel ) {
+        if ( !localStorage.getItem(kFuelCookie) || localStorage.getItem(kFuelCookie) < this.fuelLevel  ) {
+          localStorage.setItem(kFuelCookie, this.fuelLevel )
+          this.newRecord = true
+        }
+      }
     }
   }
 
@@ -148,7 +160,8 @@ class Ship extends DynamicObject {
     this.stopped = false;
     this.translation.addSelf({x:0,y:-2})
     this.v.y = -0.1;
-    this.fuelLevel = 1000
+    this.fuelLevel = kFuelFull
+    this.newRecord = false
   }
 
   crash () {
