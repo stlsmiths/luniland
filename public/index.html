@@ -16,15 +16,16 @@
 
     <style>
         body { margin: 0; overflow: hidden; overscroll-behavior: none; }
-        #container { display: flex; background-color: black; justify-content: center; align-items: center; text-align: center; }
+        #container { display: flex; justify-content: center; align-items: center; text-align: center; }
         #status { position: absolute; top:0.05em; width: 60%; }
-        #lightDark { position: absolute; top: 10px; right: 10px; cursor: pointer; }
+        #lightDark { position: absolute;
+            font-family: "Tahoma", system-ui;
+            top: 10px; right: 10px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         .bottom { position: absolute; bottom:1em; width: 100%; }
         .bottom-right { position: absolute; bottom:0.5em; right: 1em; }
         .label-group { margin-right: 1em; }
         .lg-label, .lg-value, .lg-sign { font-size: 24px; margin-right: 0.2em; }
         .lg-label-small { font-size: 20px; margin-right: 0.2em; }
-        .dark { color: white; }
         .init-check { outline: none; }
     </style>
   </head>
@@ -32,6 +33,7 @@
   <body scroll="no">
     <div id="container">
       <div id="app"></div>
+
       <h2 id="status"></h2>
       <div class="bottom" >
         <span id="vy" class="label-group">
@@ -47,11 +49,13 @@
           <span class="lg-label">Fuel</span><span class="lg-value">0</span>
         </span>
         <span id="fuelOption" class="label-group">
-          <input type="checkbox" id="fuelCheck" class="init-check" onchange="luniTwo.fuelCheckChange(this)"/>
+          <input type="checkbox"
+                 id="fuelCheck"
+                 class="init-check" onchange="luniTwo.fuelCheckChange(this)"/>
           <span id="fuelMonitorLabel" class="lg-label-small"></span>
         </span>
       </div>
-      <div id="lightDark" class="dark" onclick="luniTwo.lightDark()">Light</div>
+      <span id="lightDark" onclick="luniTwo.toggleLightDark()"></span>
       <span class="bottom-right"><a href="https://github.com/halaprop/luniland">https://github.com/halaprop/luniland</a></span>
     </div>
   </body>
