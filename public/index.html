@@ -19,7 +19,7 @@
         #container { display: flex; justify-content: center; align-items: center; text-align: center; }
         #status { position: absolute; top:0.05em; width: 60%; }
         #lightDark { position: absolute;
-            font-family: Tahoma;
+            font-family: "Tahoma", system-ui;
             top: 10px; right: 10px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         .bottom { position: absolute; bottom:1em; width: 100%; }
         .bottom-right { position: absolute; bottom:0.5em; right: 1em; }
@@ -55,7 +55,7 @@
           <span id="fuelMonitorLabel" class="lg-label-small"></span>
         </span>
       </div>
-      <span id="lightDark" onclick="luniTwo.toggleLightDark()">Light</span>
+      <span id="lightDark" onclick="luniTwo.toggleLightDark()"></span>
       <span class="bottom-right"><a href="https://github.com/halaprop/luniland">https://github.com/halaprop/luniland</a></span>
     </div>
   </body>
