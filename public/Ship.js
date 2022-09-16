@@ -152,7 +152,7 @@ class Ship extends DynamicObject {
           localStorage.setItem(kFuelCookie, this.fuelLevel )
           this.newRecord = true
         }
-      }
+      }  
     }
   }
 
