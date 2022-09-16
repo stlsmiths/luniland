@@ -98,10 +98,9 @@ class Label {
     this.labelDiv = this.div.getElementsByClassName('lg-label')[0] || this.div;
     this.valueDiv = this.div.getElementsByClassName('lg-value')[0];
     this.signDiv = this.div.getElementsByClassName('lg-sign')[0];
-    if ( options.dark ) {
-      this.div.style.color = 'white'
-    }
-
+    
+    this.div.style.color = options.dark ? 'white' : 'black'
+    
     this.plusSign = options.plusSign || '+';
     this.minusSign = options.minusSign || '-';
     this.roundTo = options.roundTo || 2;
