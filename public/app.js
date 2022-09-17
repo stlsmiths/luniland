@@ -66,14 +66,52 @@ class LuniTwo {
   }
 
   initTheme() {
-    document.getElementById('container').style.backgroundColor = this.dark ? 'black' : 'white'
+    document.getElementById('container').style.backgroundColor = this.dark ? '#131e29' : 'white'
 
     this.lightDark = new Label('lightDark', {
       label: this.dark ? 'Light' : 'Dark',
       plusSign: '', minusSign: '',
       dark: this.dark
     });
+
+    // this.initScene()
   }
+
+  initScene() {
+    if ( this.dark ) {
+      // Draw stars ...  https://observablehq.com/@phocks/two-js-starfield-experiment
+      const margin = 0
+      const stars = []
+      const nstars = 300
+      const radmin = 0.4
+      const radmax = 2.5
+
+      const width = window.innerWidth
+      const height = window.innerHeight
+
+      const left = -width / 2 + margin
+      const right = width / 2 - margin
+      const top = -height / 2 + margin
+      const bot = height / 2 - margin
+
+      function getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      for (let i = 0; i < nstars; i++) {
+        // stars.push(
+          const star = this.two.makeCircle(
+            getRandomArbitrary(left, right),
+            getRandomArbitrary(top, bot),
+            // getRandomArbitrary(1.5, 3.3)
+            getRandomArbitrary(radmin, radmax)
+          )
+        star.className = 'background'
+      }
+
+    }
+  }
+
 
   // each game state method performs an action for that state and returns a next state
   startingState() {
