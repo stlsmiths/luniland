@@ -11,6 +11,7 @@ class Terrain {
   constructor(two, xPos, width, amplitude, padCount, dark = false) {
     this.xPos = xPos;
     this.width = width;
+    this.dark = dark
 
     const perlin = perlinPath(xPos, width, amplitude);
     this.stride = perlin.stride;
@@ -25,6 +26,7 @@ class Terrain {
     const br = new Two.Anchor(this.anchors[this.anchors.length-1].x, amplitude * 2);
     this.path = new Two.Path([...this.anchors, br, bl], true);
     this.path.fill = dark ? kFillDark : kFillLight
+    this.path.stroke = dark ? 'white' : 'white'
 
     const group = new Two.Group(this.path);
     this.createPadsAndHorizon(padCount, group);
@@ -47,8 +49,13 @@ class Terrain {
   createPadsAndHorizon(count, group) {
     const newPad = (x,y) => {
       const shape = new Two.Rectangle(x, y+0.5*kPadHeight, kPadWidth, kPadHeight);
-      shape.fill = 'grey';
-      shape.stroke = 'yellow'
+      if ( this.dark ) {
+        shape.fill = 'white';
+        shape.stroke = 'white'
+      } else {
+        shape.fill = 'grey';
+        shape.stroke = 'yellow'
+      }
       return shape;
     }
     const padStride = this.width / (count+1);
